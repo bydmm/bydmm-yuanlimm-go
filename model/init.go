@@ -1,6 +1,7 @@
 package model
 
 import (
+	"os"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -15,7 +16,9 @@ var DB *gorm.DB
 // Database 在中间件中初始化mysql链接
 func Database(connString string) {
 	db, err := gorm.Open("mysql", connString)
-	db.LogMode(true)
+	if os.Getenv("DEBUG") != "" {
+		db.LogMode(true)
+	}
 	// Error
 	if err != nil {
 		panic(err)

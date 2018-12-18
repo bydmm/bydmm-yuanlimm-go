@@ -30,6 +30,20 @@ func Stocks() []Stock {
 	return stocks
 }
 
+// RandStock 随机股票
+func RandStock() (Stock, error) {
+	var stock Stock
+	err := DB.Order("RAND()").Find(&stock).Error
+	return stock, err
+}
+
+// FindStock 根据代号找股票
+func FindStock(code string) (Stock, error) {
+	var stock Stock
+	err := DB.Where("code = ?", code).Find(&stock).Error
+	return stock, err
+}
+
 // Price 当前价格
 func (stock *Stock) Price() int64 {
 	key := fmt.Sprintf("go:stock:%s:price", stock.Code)

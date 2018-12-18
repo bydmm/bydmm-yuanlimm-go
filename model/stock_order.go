@@ -2,6 +2,8 @@ package model
 
 import (
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 // OrderStatus 订单状态
@@ -15,6 +17,7 @@ type StockOrder struct {
 	Amount         int64
 	FinishedAmount int64
 	Detail         string `sql:"type:text"`
+	User           User   `gorm:"foreignkey:UserID"`
 	UserID         uint
 	Stock          Stock `gorm:"foreignkey:StockCode"`
 	StockCode      string
@@ -30,3 +33,8 @@ const (
 	// Cancel 交易取消
 	Cancel
 )
+
+// StockOrderPreload 必要预加载
+func StockOrderPreload() *gorm.DB {
+	return DB.Preload("User").Preload("Stock")
+}

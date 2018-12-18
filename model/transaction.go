@@ -11,8 +11,8 @@ type PayType uint
 
 // Transaction 交易
 type Transaction struct {
-	ID               uint `gorm:"primary_key"`
-	Status           string
+	ID               uint       `gorm:"primary_key"`
+	Type             string     `sql:"index"`
 	PayType          PayType    `sql:"index"`
 	PayerID          uint       `sql:"index"`
 	PayeeID          uint       `sql:"index"`
@@ -35,6 +35,13 @@ const (
 	Trade
 	// Give 转账
 	Give
+)
+
+const (
+	// CoinTransaction 金币转账
+	CoinTransaction = "CoinTransaction"
+	// StockTransaction 股票转账
+	StockTransaction = "StockTransaction"
 )
 
 // TransactionPreload 必要预加载

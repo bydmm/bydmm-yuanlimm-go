@@ -2,10 +2,10 @@ package main
 
 import (
 	"os"
-	"time"
 	"yuanlimm-worker/cache"
 	"yuanlimm-worker/cron"
 	"yuanlimm-worker/model"
+	"yuanlimm-worker/server"
 
 	"github.com/joho/godotenv"
 )
@@ -19,8 +19,7 @@ func init() {
 func main() {
 	cron.Start()
 
-	for true {
-		time.Sleep(2 * time.Second)
-	}
-	// woker.Start()
+	// 装载路由
+	r := server.NewRouter()
+	r.Run(":3000")
 }

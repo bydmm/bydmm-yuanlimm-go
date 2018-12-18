@@ -2,6 +2,7 @@ package cron
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"runtime"
 	"time"
@@ -26,14 +27,19 @@ func Start() {
 	if Cron == nil {
 		Cron = cron.New()
 	}
-	Cron.AddFunc("@hourly", func() { Run(TrendHour) })
-	Cron.AddFunc("@daily", func() { Run(TrendHour) })
-	Cron.AddFunc("@daily", func() { Run(LoveClear) })
-	Cron.AddFunc("@every 10m", func() { Run(UserRank) })
-	Cron.AddFunc("@every 11m", func() { Run(HotRank) })
-	Cron.AddFunc("@every 12m", func() { Run(BuyPriceRank) })
-	Cron.AddFunc("@every 13m", func() { Run(SalePriceRank) })
-	Cron.AddFunc("@every 14m", func() { Run(MarketValueRank) })
+
+	if os.Getenv("DEBUG") == "" {
+		Cron.AddFunc("@every 1m", func() { Run(MatchingTrade) })
+		Cron.AddFunc("@hourly", func() { Run(TrendHour) })
+		Cron.AddFunc("@daily", func() { Run(TrendHour) })
+		Cron.AddFunc("@daily", func() { Run(LoveClear) })
+		Cron.AddFunc("@daily", func() { Run(GreenHatChecker) })
+		Cron.AddFunc("@every 10m", func() { Run(UserRank) })
+		Cron.AddFunc("@every 11m", func() { Run(HotRank) })
+		Cron.AddFunc("@every 12m", func() { Run(BuyPriceRank) })
+		Cron.AddFunc("@every 13m", func() { Run(SalePriceRank) })
+		Cron.AddFunc("@every 14m", func() { Run(MarketValueRank) })
+	}
 	Cron.Start()
 	fmt.Println("Cron Job Start")
 }

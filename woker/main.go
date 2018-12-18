@@ -56,8 +56,8 @@ func QueueHandle(message *workers.Msg) {
 // Start 启动队列
 func Start() {
 	workers.Configure(map[string]string{
-		"server":   os.Getenv("WORKER_REDIS_ADDR"),
-		"password": os.Getenv("WORKER_REDIS_PW"),
+		"server":   os.Getenv("REDIS_ADDR"),
+		"password": os.Getenv("REDIS_PW"),
 		"database": os.Getenv("WORKER_REDIS_DB"),
 		"pool":     "30",
 		"process":  "1",

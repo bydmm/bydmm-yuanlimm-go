@@ -88,14 +88,14 @@ func (helper *TradeOrderHelper) Seller() model.User {
 // TotalFund 总资金
 func (helper *TradeOrderHelper) TotalFund() int64 {
 	var wallet model.UserWallet
-	model.DB.Where("user_id = ?", helper.Buyer().ID).First(&wallet)
+	model.DB.Where("user_id = ?", helper.buyOrder.UserID).First(&wallet)
 	return wallet.Balance
 }
 
 // TotalStock 卖方总股份
 func (helper *TradeOrderHelper) TotalStock() int64 {
 	var hold model.UserStock
-	model.DB.Where("user_id = ?", helper.Buyer().ID).First(&hold)
+	model.DB.Where("user_id = ?", helper.saleOrder.UserID).First(&hold)
 	return hold.Balance
 }
 

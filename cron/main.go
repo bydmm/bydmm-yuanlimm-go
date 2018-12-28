@@ -36,8 +36,8 @@ func Start() {
 		Cron.AddFunc("@daily", func() { Run(GreenHatChecker) })
 		Cron.AddFunc("@every 10m", func() { Run(UserRank) })
 		Cron.AddFunc("@every 11m", func() { Run(HotRank) })
-		Cron.AddFunc("@every 12m", func() { Run(BuyPriceRank) })
-		Cron.AddFunc("@every 13m", func() { Run(SalePriceRank) })
+		Cron.AddFunc("@every 1m", func() { Run(BuyPriceRank) })
+		Cron.AddFunc("@every 1m", func() { Run(SalePriceRank) })
 		Cron.AddFunc("@every 14m", func() { Run(MarketValueRank) })
 	}
 	Cron.Start()

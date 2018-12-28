@@ -2,12 +2,31 @@ package cron
 
 import (
 	"encoding/json"
+	"fmt"
 	"math"
 	"sort"
 	"time"
 	"yuanlimm-worker/cache"
 	"yuanlimm-worker/model"
 )
+
+// FreshPrice 刷新股票的最后交易价格
+func FreshPrice() {
+	for _, stock := range model.Stocks() {
+		key := fmt.Sprintf("stock:%s:last_price", stock.Code)
+		var trade model.Transaction
+		err := model.DB.Preload("BuyOrder").
+			Where("stock_code = ?", stock.Code).
+			Where("pay_type = ?", model.Trade).
+			Order("id DESC").
+			First(&trade).Error
+		if err == nil {
+			cache.RedisClient.Set(key, trade.BuyOrder.Price, 0)
+		} else {
+			cache.RedisClient.Set(key, 0, 0)
+		}
+	}
+}
 
 // BuyPriceRank 刷新股票的最新买价
 func BuyPriceRank() {

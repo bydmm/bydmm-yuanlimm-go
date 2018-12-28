@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/jinzhu/gorm"
+)
 
 // UserStock 用户持股
 type UserStock struct {
@@ -12,4 +16,30 @@ type UserStock struct {
 	StockCode string `sql:"index"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+// AddStock 加股
+func AddStock(userID uint, code string, amount int64) (err error) {
+	if userID == 0 {
+		return
+	}
+	var wallet UserStock
+	err = DB.FirstOrCreate(&wallet, UserStock{UserID: userID, StockCode: code}).Error
+	if err != nil {
+		return err
+	}
+	return DB.Model(&wallet).UpdateColumn("balance", gorm.Expr("balance + ?", amount)).Error
+}
+
+// MinusStock 减股
+func MinusStock(userID uint, code string, amount int64) (err error) {
+	if userID == 0 {
+		return
+	}
+	var wallet UserStock
+	err = DB.FirstOrCreate(&wallet, UserStock{UserID: userID, StockCode: code}).Error
+	if err != nil {
+		return err
+	}
+	return DB.Model(&wallet).UpdateColumn("balance", gorm.Expr("balance - ?", amount)).Error
 }

@@ -48,3 +48,28 @@ const (
 func TransactionPreload() *gorm.DB {
 	return DB.Preload("BuyOrder").Preload("SaleOrder").Preload("Stock")
 }
+
+// AfterCreate 创建之后的钩子
+func (item *Transaction) AfterCreate(tx *gorm.DB) (err error) {
+	switch item.Type {
+	case "CoinTransaction":
+		err = AddCoin(item.PayeeID, item.Amount)
+		if err != nil {
+			return err
+		}
+		err = MinusCoin(item.PayerID, item.Amount)
+		if err != nil {
+			return err
+		}
+	case "StockTransaction":
+		err = AddStock(item.PayeeID, item.StockCode, item.Amount)
+		if err != nil {
+			return err
+		}
+		err = MinusStock(item.PayerID, item.StockCode, item.Amount)
+		if err != nil {
+			return err
+		}
+	}
+	return
+}

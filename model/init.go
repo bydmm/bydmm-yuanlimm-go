@@ -1,9 +1,9 @@
 package model
 
 import (
-	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 
 	//
@@ -16,9 +16,6 @@ var DB *gorm.DB
 // Database 在中间件中初始化mysql链接
 func Database(connString string) {
 	db, err := gorm.Open("mysql", connString)
-	if os.Getenv("DEBUG") != "" {
-		db.LogMode(true)
-	}
 	// Error
 	if err != nil {
 		panic(err)
@@ -32,4 +29,10 @@ func Database(connString string) {
 	db.DB().SetConnMaxLifetime(time.Second * 30)
 
 	DB = db
+
+	if gin.Mode() == "release" {
+		db.LogMode(false)
+	} else {
+		db.LogMode(true)
+	}
 }

@@ -19,27 +19,27 @@ type UserStock struct {
 }
 
 // AddStock 加股
-func AddStock(userID uint, code string, amount int64) (err error) {
+func AddStock(tx *gorm.DB, userID uint, code string, amount int64) (err error) {
 	if userID == 0 {
 		return
 	}
 	var wallet UserStock
-	err = DB.FirstOrCreate(&wallet, UserStock{UserID: userID, StockCode: code}).Error
+	err = tx.FirstOrCreate(&wallet, UserStock{UserID: userID, StockCode: code}).Error
 	if err != nil {
 		return err
 	}
-	return DB.Model(&wallet).UpdateColumn("balance", gorm.Expr("balance + ?", amount)).Error
+	return tx.Model(&wallet).UpdateColumn("balance", gorm.Expr("balance + ?", amount)).Error
 }
 
 // MinusStock 减股
-func MinusStock(userID uint, code string, amount int64) (err error) {
+func MinusStock(tx *gorm.DB, userID uint, code string, amount int64) (err error) {
 	if userID == 0 {
 		return
 	}
 	var wallet UserStock
-	err = DB.FirstOrCreate(&wallet, UserStock{UserID: userID, StockCode: code}).Error
+	err = tx.FirstOrCreate(&wallet, UserStock{UserID: userID, StockCode: code}).Error
 	if err != nil {
 		return err
 	}
-	return DB.Model(&wallet).UpdateColumn("balance", gorm.Expr("balance - ?", amount)).Error
+	return tx.Model(&wallet).UpdateColumn("balance", gorm.Expr("balance - ?", amount)).Error
 }

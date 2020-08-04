@@ -53,20 +53,20 @@ func TransactionPreload() *gorm.DB {
 func (item *Transaction) AfterCreate(tx *gorm.DB) (err error) {
 	switch item.Type {
 	case "CoinTransaction":
-		err = AddCoin(item.PayeeID, item.Amount)
+		err = AddCoin(tx, item.PayeeID, item.Amount)
 		if err != nil {
 			return err
 		}
-		err = MinusCoin(item.PayerID, item.Amount)
+		err = MinusCoin(tx, item.PayerID, item.Amount)
 		if err != nil {
 			return err
 		}
 	case "StockTransaction":
-		err = AddStock(item.PayeeID, item.StockCode, item.Amount)
+		err = AddStock(tx, item.PayeeID, item.StockCode, item.Amount)
 		if err != nil {
 			return err
 		}
-		err = MinusStock(item.PayerID, item.StockCode, item.Amount)
+		err = MinusStock(tx, item.PayerID, item.StockCode, item.Amount)
 		if err != nil {
 			return err
 		}

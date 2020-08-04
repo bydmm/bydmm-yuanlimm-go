@@ -4,3 +4,4 @@
 fabfile.py
 *.log
 api_server
+docker-compose.yml

@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"fmt"
 	"yuanlimm-worker/model"
 
 	"github.com/jinzhu/gorm"
@@ -106,7 +107,7 @@ func (helper *TradeOrderHelper) DealPrice() int64 {
 
 // SaleAmount 可卖数量
 func (helper *TradeOrderHelper) SaleAmount() int64 {
-	wantSale := int64Abs(helper.saleOrder.Amount) - int64Abs(helper.saleOrder.FinishedAmount)
+	wantSale := int64Abs(int64Abs(helper.saleOrder.Amount) - int64Abs(helper.saleOrder.FinishedAmount))
 	if helper.TotalStock() <= wantSale {
 		return helper.TotalStock()
 	}
@@ -130,8 +131,9 @@ func (helper *TradeOrderHelper) DealStockAmount() int64 {
 	}
 	if helper.BuyAmount() >= helper.SaleAmount() {
 		helper.dealStockAmount = helper.SaleAmount()
+	} else {
+		helper.dealStockAmount = helper.BuyAmount()
 	}
-	helper.dealStockAmount = helper.BuyAmount()
 	return helper.dealStockAmount
 }
 
@@ -196,19 +198,19 @@ func (helper *TradeOrderHelper) Transaction() error {
 	}()
 	if err := helper.TransferCoin(transaction); err != nil {
 		transaction.Rollback()
-		return err
+		return fmt.Errorf("TransferCoin: %s", err.Error())
 	}
 	if err := helper.TransferStock(transaction); err != nil {
 		transaction.Rollback()
-		return err
+		return fmt.Errorf("TransferStock: %s", err.Error())
 	}
 	if err := helper.FinishBuyOrder(transaction); err != nil {
 		transaction.Rollback()
-		return err
+		return fmt.Errorf("FinishBuyOrder: %s", err.Error())
 	}
 	if err := helper.FinishSaleOrder(transaction); err != nil {
 		transaction.Rollback()
-		return err
+		return fmt.Errorf("FinishSaleOrder: %s", err.Error())
 	}
 	return transaction.Commit().Error
 }
@@ -231,7 +233,7 @@ func (helper *TradeOrderHelper) Trade() {
 	}
 	err := helper.Transaction()
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 }
 
